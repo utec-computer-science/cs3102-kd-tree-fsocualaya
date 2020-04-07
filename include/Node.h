@@ -6,6 +6,7 @@
 #define CS3102_KD_TREE_FSOCUALAYA_NODE_H
 
 #include <vector>
+#include <cmath>
 
 template <typename T>
 using Point = std::vector<T>;
@@ -18,7 +19,8 @@ struct Node{
     short axis;
 
     Node(int k);
-    Node(int k, Point<T> point); // Fixed for k = 2
+    Node(int k, Point<T>& point); // Fixed for k = 2
+    double calculateDistance(Node<T>* node);
 };
 
 template<typename T>
@@ -28,11 +30,19 @@ Node<T>::Node(int k) {
 }
 
 template<typename T>
-Node<T>::Node(int k, Point<T> point) {
+Node<T>::Node(int k, Point<T>& point) {
     this->k = k;
     data.resize(k);
-    this->data[0] = point[0];
-    this->data[1] = point[1];
+    this->data = point;
+}
+
+template<typename T>
+double Node<T>::calculateDistance(Node<T>* node) {
+    double squareSum = 0;
+    for(int i=0;i< this->k;++i){
+        squareSum += pow(this->data[i] - node->data[i], 2);
+    }
+    return sqrt(squareSum);
 }
 
 #endif // CS3102_KD_TREE_FSOCUALAYA_NODE_H

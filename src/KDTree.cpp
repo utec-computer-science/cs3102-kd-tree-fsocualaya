@@ -3,23 +3,24 @@
 //
 
 #include <iostream>
-#include <queue>
+#include <set>
 #include "../include/Node.h"
 
 template <typename T>
 class KDTree{
     Node<T>* root = nullptr;
-    int nodes = 0;
-    int k;
+    int n_nodes = 0;
+    int k{};
 
     void print(Node<T>* node);
     Node<T>* find(Point<T>, Node<T>* parent);
 
 public:
-    KDTree(int k);
+    explicit KDTree(int k);
     void insert(Point<T> point);
-    void findKNN(Point<T>, int k);
+    std::set<Node<T>*> findKNN(Point<T>&, int);
     Node<T>* find(Point<T>);
+    int size(){return n_nodes;};
     void print();
 };
 
@@ -54,6 +55,13 @@ Node<T> *KDTree<T>::find(Point<T> point) {
 
 template<typename T>
 Node<T> *KDTree<T>::find(Point<T> point, Node<T> *parent) {
+    for (int i = 0; i < point.size(); ++i){
+        if (point[i] != parent->data[i])
+            break;
+        else
+            return parent;
+    }
+
     if(point[parent->axis] >= parent->data[parent->axis]){
         if(parent->right)
             return find(point, parent->right);
@@ -81,13 +89,28 @@ void KDTree<T>::insert(Point<T> point) {
             parent->left = node;
         }
         node->axis = (parent->axis+1)%parent->k;
-        nodes++;
     } else{
         root = node;
     }
+    n_nodes++;
 }
 
 template<typename T>
-void KDTree<T>::findKNN(Point<T> point, int knn) {
-    // TODO
+std::set<Node<T>*> KDTree<T>::findKNN(Point<T> &point, int k) {
+    std::set<Node<T>*> nodes;
+    getNodes(root, nodes);
+
+    return nodes;
 }
+
+template<typename T>
+void getNodes(Node<T>* node,  std::set<Node<T>*> &nodes) {
+    if(node->left) {
+        getNodes(node->left, nodes);
+    }
+    if(node->right) {
+        getNodes(node->right, nodes);
+    }
+    nodes.insert(node);
+}
+
