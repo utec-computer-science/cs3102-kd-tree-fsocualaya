@@ -3,12 +3,12 @@
 int main() {
 
     Point<int> p1 = {3, 6};
-    auto p2 = {2,7};
-    auto p3 = {17,15};
-    auto p4 = {6,12};
-    auto p5 = {9,1};
-    auto p6 = {13,15};
-    auto p7 = {10,19};
+    Point<int> p2 = {2,7};
+    Point<int> p3 = {17,15};
+    Point<int> p4 = {6,12};
+    Point<int> p5 = {9,1};
+    Point<int> p6 = {13,15};
+    Point<int> p7 = {10,19};
 
     //kdTree.print();
 
@@ -20,14 +20,13 @@ int main() {
     kdTree.insert(p5);
     kdTree.insert(p6);
     kdTree.insert(p7);
-    kdTree.insert({1,5});
 
-    auto nodes = kdTree.findKNN(p1, 5);
+    Point<int> p8 = {11,8};
+
+    auto nn = kdTree.searchNN(p4);
 
     std::cout<< kdTree.size()<<'\n';
 
-    for(auto&i:nodes){
-        std::cout<<i->data[0]<<' '<<i->data[1]<<' '<< i->calculateDistance(kdTree.find({3,6})) << '\n';
-    }
+    std::cout<<nn->data[0]<<','<<nn->data[1]<<'\n';
     return 0;
 }

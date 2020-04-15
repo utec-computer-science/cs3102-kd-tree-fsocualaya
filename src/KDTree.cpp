@@ -17,8 +17,8 @@ class KDTree{
 
 public:
     explicit KDTree(int k);
-    void insert(Point<T> point);
-    std::set<Node<T>*> findKNN(Point<T>&, int);
+    void insert(Point<T>& point);
+    Node<T>* searchNN(Point<T>&);
     Node<T>* find(Point<T>);
     int size(){return n_nodes;};
     void print();
@@ -55,12 +55,13 @@ Node<T> *KDTree<T>::find(Point<T> point) {
 
 template<typename T>
 Node<T> *KDTree<T>::find(Point<T> point, Node<T> *parent) {
+    bool isParent = false;
     for (int i = 0; i < point.size(); ++i){
-        if (point[i] != parent->data[i])
-            break;
-        else
-            return parent;
+        if (point[i] == parent->data[i])
+            isParent = true;
     }
+    if(isParent)
+        return parent;
 
     if(point[parent->axis] >= parent->data[parent->axis]){
         if(parent->right)
@@ -78,7 +79,7 @@ Node<T> *KDTree<T>::find(Point<T> point, Node<T> *parent) {
 }
 
 template<typename T>
-void KDTree<T>::insert(Point<T> point) {
+void KDTree<T>::insert(Point<T>& point) {
     Node<T>* parent = find(point);
     Node<T>* node = new Node<T>(this->k, point);
 
@@ -96,14 +97,6 @@ void KDTree<T>::insert(Point<T> point) {
 }
 
 template<typename T>
-std::set<Node<T>*> KDTree<T>::findKNN(Point<T> &point, int k) {
-    std::set<Node<T>*> nodes;
-    getNodes(root, nodes);
-
-    return nodes;
-}
-
-template<typename T>
 void getNodes(Node<T>* node,  std::set<Node<T>*> &nodes) {
     if(node->left) {
         getNodes(node->left, nodes);
@@ -114,3 +107,22 @@ void getNodes(Node<T>* node,  std::set<Node<T>*> &nodes) {
     nodes.insert(node);
 }
 
+template<typename T>
+Node<T>* KDTree<T>::searchNN(Point<T> & point) {
+    auto p_point = new Node<T>(k, point);
+    std::set<Node<T>*> nodes;
+    getNodes(root, nodes);
+
+    Node<T>* nearestNeighbor = nullptr;
+    double nearestDistance = 0;
+
+    for(auto&i:nodes){
+        double currentDistance = p_point->calculateDistance(i);
+        if(nearestDistance == 0 || currentDistance<nearestDistance){
+            nearestNeighbor = i;
+            nearestDistance = currentDistance;
+        }
+    }
+
+    return nearestNeighbor;
+}
